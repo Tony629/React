@@ -6,40 +6,70 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // import User from "@/models/User";
 // import connect from "@/utils/db";
 
+interface User {
+  id: string;
+  email: string;
+  password: string;
+  name: string;
+}
+
+interface ExtendedUser extends User {
+  role?: string;
+}
+
 export const authOptions: any = {
-    providers: [
-        CredentialsProvider({
-            id: "credentials",
-            name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "text" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials: any) {
-                const { email, password } = credentials;
+  providers: [
+    CredentialsProvider({
+      id: "credentials",
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials: any) {
+        const { email, password } = credentials;
 
-                return {
-                    id: "1",
-                    email: email,
-                    name: "tony zhang",
-                    role: ["admin", "manager", "developer"]
-                }
-            },
-        }),
-        GithubProvider({
-            clientId: process.env.GITHUB_ID ?? "",
-            clientSecret: process.env.GITHUB_SECRET ?? "",
-        }),
-    ],
-    callbacks: {
-        async signIn({ user, account }: { user: AuthUser; account: Account }) {
-            if (account?.provider == "credentials") {
-                return true;
-            }
+        return {
+          id: "1",
+          email: email,
+          name: "tony zhang",
+          role: ["admin", "manager", "developer"],
+        };
+      },
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_ID ?? "",
+      clientSecret: process.env.GITHUB_SECRET ?? "",
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account }: { user: AuthUser; account: Account }) {
+      if (account?.provider == "credentials") {
+        return true;
+      }
 
-            return false;
-        },
-    }
+      return false;
+    },
+    async jwt({ token, user }: any) {
+      const ExtUser: ExtendedUser = user;
+      if (ExtUser) {
+        token.role = ExtUser.role;
+        console.log("Token:" + token);
+      }
+      return token;
+    },
+    async session({ session, token }: any) {
+      if (session?.user) {
+        session.user.role = token.role;
+        session.user.id = token.sub;
+      }
+
+      return session;
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
 };
 
 export const handler = NextAuth(authOptions);
