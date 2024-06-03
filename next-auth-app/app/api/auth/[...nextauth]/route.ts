@@ -7,7 +7,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // import connect from "@/utils/db";
 
 export const authOptions: any = {
-    // Configure one or more authentication providers
     providers: [
         CredentialsProvider({
             id: "credentials",
@@ -18,12 +17,12 @@ export const authOptions: any = {
             },
             async authorize(credentials: any) {
                 const { email, password } = credentials;
-                console.log(email + ";" + password)
 
                 return {
                     id: "1",
                     email: email,
-                    name: "tony zhang"
+                    name: "tony zhang",
+                    role: ["admin", "manager", "developer"]
                 }
             },
         }),
@@ -40,7 +39,7 @@ export const authOptions: any = {
 
             return false;
         },
-    },
+    }
 };
 
 export const handler = NextAuth(authOptions);
