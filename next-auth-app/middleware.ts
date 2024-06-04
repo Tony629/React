@@ -1,17 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { handler } from '@/app/api/auth/[...nextauth]/route'
+import { withAuth, NextRequestWithAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-    // const session = await getServerSession(handler)
-    // console.log("===session===")
-    // console.log(session)\
-
-    console.log("=================")
-
-    return NextResponse.next();
-}
+export default withAuth(
+    function middleware(request: NextRequestWithAuth) {
+        console.log("middleware request url:" + request.nextUrl.pathname.toString())
+        console.log("middleware token:" + JSON.stringify(request.nextauth.token))
+    },
+    {
+        callbacks: {
+            authorized: ({ token }) => !!token
+        }
+    }
+)
 
 export const config = {
-    matcher: ['/admin/:path*']
+    matcher: ['/dashboard', '/settings']
 }

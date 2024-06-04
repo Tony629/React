@@ -33,7 +33,7 @@ export const authOptions: any = {
           id: "1",
           email: email,
           name: "tony zhang",
-          role: ["admin", "manager", "developer"],
+          role: ["admin", "dev"]
         };
       },
     }),
@@ -51,11 +51,8 @@ export const authOptions: any = {
       return false;
     },
     async jwt({ token, user }: any) {
-      const ExtUser: ExtendedUser = user;
-      if (ExtUser) {
-        token.role = ExtUser.role;
-        console.log("Token:" + token);
-      }
+      if (user) token.role = user.role;
+      console.log("async jwt:" + JSON.stringify(token))
       return token;
     },
     async session({ session, token }: any) {
