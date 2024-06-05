@@ -2,20 +2,9 @@ import NextAuth from "next-auth";
 import { Account, User as AuthUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 // import User from "@/models/User";
 // import connect from "@/utils/db";
-
-interface User {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-}
-
-interface ExtendedUser extends User {
-  role?: string;
-}
 
 export const authOptions: any = {
   providers: [
@@ -48,11 +37,18 @@ export const authOptions: any = {
         return true;
       }
 
+      if (account?.provider == "github") {
+        const { name, email } = user;
+        console.log("github provider :" + email);
+
+        return true;
+      }
+
       return false;
     },
     async jwt({ token, user }: any) {
       if (user) token.role = user.role;
-      console.log("async jwt:" + JSON.stringify(token))
+
       return token;
     },
     async session({ session, token }: any) {
@@ -71,3 +67,6 @@ export const authOptions: any = {
 
 export const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
+//github Authorization callback URL
+//http://localhost:3000/api/auth/callback/github
