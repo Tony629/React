@@ -1,11 +1,8 @@
 export default function Navbar() {
     return (
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
+        <div className='flex justify-between items-center bg-slate-800 px-8 py-3  h-35'>
+            <span className='text-white font-bold text-3xl'>React</span>
+            <button className='bg-white p-2'>Add Topic</button>
+        </div>
     )
 }
