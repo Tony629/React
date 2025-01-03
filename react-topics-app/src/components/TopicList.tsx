@@ -1,28 +1,11 @@
-import { useEffect, useState } from "react"
-
-import { getTopics, deleteTopic } from "../services/topicService"
 import { Topic } from "../types/Topics"
 
-export default function TopicList() {
-    const [topics, setTopics] = useState<Topic[]>([]);
+interface TopicListProps {
+    topics: Topic[],
+    onDeleteTopic: (id: number) => void;
+}
 
-    useEffect(() => {
-        const fetchTopics = async () => {
-            const fetchedTopics = await getTopics();
-            setTopics(fetchedTopics);
-        }
-
-        fetchTopics();
-    }, [])
-
-    const handleDelete = async (id: number) => {
-        try {
-            await deleteTopic(id);
-            setTopics(topics.filter(x => x.id !== id))
-        } catch (err) {
-            console.log(err);
-        }
-    }
+export default function TopicList({ topics, onDeleteTopic }: TopicListProps) {
 
     return (
         <>
@@ -33,7 +16,7 @@ export default function TopicList() {
                         <div>{t.description}</div>
                     </div>
                     <div className='flex gap-2'>
-                        <button className='text-red-400' onClick={() => handleDelete(t.id)}>Delete</button>
+                        <button className='text-red-400' onClick={() => onDeleteTopic(t.id)}>Delete</button>
                     </div>
                 </div>
             ))}
